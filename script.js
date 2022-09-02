@@ -1,6 +1,6 @@
 
 class GraphNode {
-    constructor(name, idx) {
+    constructor(name, idx=-1) {
         this.name = name;
         this.idx = idx;
         this.prev = null;
@@ -26,7 +26,9 @@ class Queue {
 
 
 class Graph {
-    constructor(n) {
+    constructor(name, n) {
+        this.name = name;
+        this.nodes = [];
         this.adjMtx = makeArray(n);
     }
 }
@@ -64,6 +66,42 @@ function arrayTest(id) {
     printArray(a);
 }
 
+
+function addNode(graph, node) {
+    // update node array
+    graph.nodes.push(node);
+    let n = graph.nodes.length;  // number of nodes
+    node.idx = n;
+
+    // update adjacency matrix
+    array = [0];
+    for (let i=0; i<n-1; i++) {  // n - 1 since the last array is added separately
+        graph.adjMtx[i].push(0);
+        array.push(0);
+    }
+    graph.adjMtx.push(array);
+}
+
+
+function inputGraphNode(id) {
+    gNode = new GraphNode(document.getElementById(id).value);
+    addNode(myGraph, gNode);
+}
+
+
+function printNodes() {
+    let n = myGraph.nodes.length
+    for (let i=0; i<n; i++) {
+        console.log(myGraph.nodes[i])
+    }
+}
+
+
+////////////////////////////////////////////////////
+
+// main code
+
+let myGraph = new Graph("myGraph", 0);
 
 
 
