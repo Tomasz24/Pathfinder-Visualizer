@@ -106,3 +106,8 @@ form {
     gap: 50px;
 }
 
+
+.add-remove-nodes {
+    display: flex;
+    justify-content: space-between;
+}

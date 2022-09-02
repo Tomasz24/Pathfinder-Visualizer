@@ -83,9 +83,49 @@ function addNode(graph, node) {
 }
 
 
+function removeNode(graph, node) {
+    // number of nodes
+    let n = graph.nodes.length;
+    let idx = 0;
+    // find node and delete from array
+    for (let i=0; i<n; i++) {
+        if (graph.nodes[i].name == node) {
+            // emulate python .extend()
+            graph.nodes = extend(graph.nodes.slice(0, i), graph.nodes.slice(i + 1));
+            // initialize idx
+            idx = i;
+            break;
+        }
+    }
+
+    // update adjacency matrix
+    for (let i=0; i<n; i++) {
+        // remove idx-th entry from non-idx nodes
+        graph.adjMtx[i] = extend(graph.adjMtx[i].slice(0, idx), graph.adjMtx[i].slice(idx + 1));
+    }
+    // remove idx-th array
+    graph.adjMtx = extend(graph.adjMtx.slice(0, idx), graph.adjMtx.slice(idx + 1));
+
+    // shift down idx
+    for (let i=0; i<n - 1; i++) {       // n - 1 since now the matrix is smaller
+        if (graph.nodes[i].idx > idx) {
+            graph.nodes[i].idx--;
+        }
+    }
+}
+
+
+// call by button
 function inputGraphNode(id) {
     gNode = new GraphNode(document.getElementById(id).value);
     addNode(myGraph, gNode);
+}
+
+
+// call by button
+function userRemoveNode(id) {
+    gNode = document.getElementById(id).value;
+    removeNode(myGraph, gNode);
 }
 
 
@@ -94,6 +134,15 @@ function printNodes() {
     for (let i=0; i<n; i++) {
         console.log(myGraph.nodes[i])
     }
+}
+
+
+function extend(a1, a2) {
+    let n = a2.length;
+    for (let i=0; i<n; i++) {
+        a1.push(a2[i]);
+    }
+    return a1;
 }
 
 
@@ -121,13 +170,9 @@ function addEdge(id1, id2) {
         if (node1 && node2) break;
     }
 
-    console.log("Before:");
-    console.log(printArray(myGraph.adjMtx));
     // modify adjMtx
     myGraph.adjMtx[node1.idx][node2.idx] = 1;
     myGraph.adjMtx[node2.idx][node1.idx] = 1;
-    console.log("After:");
-    console.log(myGraph.adjMtx);
 }
 
 
