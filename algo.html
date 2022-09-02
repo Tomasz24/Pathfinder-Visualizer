@@ -16,16 +16,29 @@
 
     <div class="algo-content">
         <!-- Input 2D array of a particular size -->
-        <button type="button" onclick="arrayTest('aLen')">Array</button>
-        <form>
-            <input type="text" id="aLen">
-        </form>
-        <button type="button" onclick="inputGraphNode('nodeName')">Add Node</button>
-        <!-- User inputs node -->
-        <form>
-            <input type="text" id="nodeName">
-        </form>
-        <button type="button" onclick="printNodes()">Print Nodes</button>
+        <div class="content1">
+            <button type="button" onclick="arrayTest('aLen')">Array</button>
+            <form>
+                <input type="text" id="aLen">
+            </form>
+            <button type="button" onclick="inputGraphNode('nodeName')">Add Node</button>
+            <!-- User inputs node -->
+            <form>
+                <input type="text" id="nodeName">
+            </form>
+            <button type="button" onclick="printNodes()">Print Nodes</button>
+        </div>
+
+        <div class="content2">
+            <button type="button" onclick="addEdge('node1', 'node2')">Add Edge</button>
+            <form>
+                <span>Node 1:</span>
+                <input type="text" id="node1">
+                <span>Node 2:</span>
+                <input type="text" id="node2">
+            </form>
+            <button type="button" onclick="printArray(myGraph.adjMtx)">Print Matrix</button>
+        </div>
     </div>
 
     <div class="algo-footer">

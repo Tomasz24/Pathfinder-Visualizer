@@ -93,3 +93,16 @@ form {
 .network {
     height: 200px;
 }
+
+
+/* /////////////////////////////// */
+/* algo.html */
+/* /////////////////////////////// */
+
+
+.algo-content {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
