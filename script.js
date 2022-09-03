@@ -1,10 +1,11 @@
 
 class GraphNode {
-    constructor(name, idx=-1) {
+    constructor(name, weight, idx=-1) {
         this.name = name;
         this.idx = idx;
         this.prev = null;
         this.explored = 0;
+        this.weight = weight;
     }
 }
 
@@ -30,6 +31,137 @@ class Graph {
         this.name = name;
         this.nodes = [];
         this.adjMtx = makeArray(n);
+    }
+}
+
+
+function insertHeap(heap, node) {
+    heap.push(node);
+    let idx = heap.length - 1;
+    swapUp(heap, idx);
+}
+
+
+function swapUp(heap, idx) {
+    // base case
+    if (idx == 0) return;
+    let pIdx = Math.floor((idx - 1) / 2);   // right child gets rounded down
+    // check if child has smaller weight
+    if (heap[pIdx].weight > heap[idx].weight) {
+        let temp = heap[pIdx];
+        heap[pIdx] = heap[idx];
+        heap[idx] = temp;
+        swapUp(heap, pIdx);
+    }
+}
+
+
+function removeHeap(heap) {
+    let n = heap.length;
+    if (n == 0) return;
+    let node = heap[0];
+    // move last node to the beginning
+    heap[0] = heap[n - 1];
+    heap.pop();     // remove the last element
+    swapDown(heap, 0);
+    console.log(node.weight);
+    return node;
+}
+
+
+function swapDown(heap, pIdx) {
+    let lIdx = pIdx*2 + 1;      // left child
+    let rIdx = lIdx + 1;        // right child
+    let cIdx;                   // minimum child
+    if (!(heap.length <= rIdx)) {           // check if rIdx is in heap
+        cIdx = (heap[lIdx].weight < heap[rIdx].weight) ? lIdx : rIdx;
+    } else if (!(heap.length <= lIdx)) {    // check if lIdx is in heap
+        cIdx = lIdx;
+    } else {                                // return if no children (base case)
+        return;
+    }
+    // compare parent with minimum child
+    if (heap[cIdx].weight < heap[pIdx].weight) {
+        temp = heap[cIdx];
+        heap[cIdx] = heap[pIdx];
+        heap[pIdx] = temp;
+        swapDown(heap, cIdx);
+    }
+}
+
+
+function printHeap(heap) {
+    let ans = "";
+    let n = heap.length;
+    if (n == 0) return;     // check if heap is empty
+    let spaces = maxSpaces(n);
+    ans = ans.concat(spaces);
+    ans = ans.concat(String(heap[0].weight));
+    ans = ans.concat("\n");
+    newSpaces = spaceCalc(spaces, 1);      // input 1, since need to input index
+    let tracker = 4;    // track when to move to the next line
+    for (let i=1; i<n; i++) {
+        ans = ans.concat(newSpaces + String(heap[i].weight));
+        // determine when to insert newline
+        if (tracker - 2 <= i) {         // tracker - 2 since let i=1
+            tracker *= 2;
+            // determine number of spaces needed before number
+            newSpaces = spaceCalc(spaces, i + 1);  // change space amount when changing depth
+            ans = ans.concat("\n");
+        }
+    }
+    console.log(ans);
+}
+
+
+function spaceCalc(spaces, idx) {
+    let spaceLen = spaces.length;
+    let depth = Math.floor(Math.log(idx + 1) / Math.log(2)); // idx + 1 to compare position, not index
+    let gapNum = Math.pow(2, depth) + 1;            // number of space gaps on each level
+    spaceLen = Math.floor(spaceLen * 2 / gapNum);    // need to multiply by 2 first
+    ans = "";
+    for (let i=0; i<spaceLen; i++) {
+        ans = ans.concat(" ");
+    }
+    return ans;
+}
+
+
+function maxSpaces(n) {
+    let depth = Math.floor(Math.log(n) / Math.log(2));
+    // number of spaces
+    let spaceNum = Math.pow(2, depth);
+    let ans = "";
+    for (let i=0; i<spaceNum; i++) {
+        ans = ans.concat(" ");
+    }
+    return ans;
+}
+
+
+function heapTest(heap, graph) {
+    let n = 9;
+    for (let i=0; i<n; i++) {
+        let node = new GraphNode("n".concat(String(i)), i);
+        insertHeap(heap, node);
+        addNode(graph, node)
+    }
+    for (let i=0; i<n; i++) {
+        let node = new GraphNode("m".concat(String(i)), i);
+        insertHeap(heap, node);
+        addNode(graph, node)
+    } 
+}
+
+
+function userInsertHeap(graph, heap, id) {
+    let nodeName = document.getElementById(id).value;
+    let n = graph.nodes.length;
+    // find node in graph with name in text-field
+    for (let i=0; i<n; i++) {
+        if (nodeName == graph.nodes[i].name) {
+            insertHeap(heap, graph.nodes[i]);
+        }
     }
 }
 
@@ -116,8 +248,9 @@ function removeNode(graph, node) {
 
 
 // call by button
-function inputGraphNode(id) {
-    gNode = new GraphNode(document.getElementById(id).value);
+function inputGraphNode(nameId, weightId) {
+    gNode = new GraphNode(document.getElementById(nameId).value,
+        document.getElementById(weightId).value);
     addNode(myGraph, gNode);
 }
 
@@ -187,5 +320,5 @@ function adjMtxTest() {
 
 let myGraph = new Graph("myGraph", 0);
 
-
+let myHeap = [];
 

@@ -25,10 +25,16 @@
 
             <div class="add-remove-nodes">
                 <div class="add-nodes">
-                    <button type="button" onclick="inputGraphNode('addNode')">Add Node</button>
+                    <button type="button" onclick="inputGraphNode('addNodeName', 'addNodeWeight')">Add Node</button>
                     <form>
-                        <input type="text" id="addNode">
+                        <span>Name: </span>
+                        <input type="text" id="addNodeName">
                     </form>
+                    <form>
+                        <span>Weight: </span>
+                        <input type="text" id="addNodeWeight">
+                    </form>
+                    <button type="button" onclick="heapTest(myHeap, myGraph)">Heap Test</button>
                 </div>
 
                 <div class="remove-nodes">
@@ -51,6 +57,22 @@
                 <input type="text" id="node2">
             </form>
             <button type="button" onclick="printArray(myGraph.adjMtx)">Print Matrix</button>
+        </div>
+
+        <div class="content3">
+            <div class="add-to-heap">
+                <button type="button" onclick="userInsertHeap(myGraph, myHeap, 'heapNode')">
+                    Add to Heap</button>
+                    <form>
+                        <span>Node Name:</span>
+                        <input type="text" id="heapNode">
+                    </form>
+                <button type="button" onclick="printHeap(myHeap)">Print Heap</button>
+            </div>
+            <div class="remove-from-heap">
+                <button type="button" onclick="removeHeap(myHeap)">
+                    Remove from Heap</button>
+            </div>
         </div>
 
     </div>

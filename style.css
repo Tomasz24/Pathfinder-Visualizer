@@ -111,3 +111,8 @@ form {
     display: flex;
     justify-content: space-between;
 }
+
+.content3 {
+    display: flex;
+    justify-content: space-between;
+}
