@@ -1,27 +1,10 @@
 
 class GraphNode {
-    constructor(name, weight, idx=-1) {
+    constructor(name, weight=-1, idx=-1) {
         this.name = name;
         this.idx = idx;
-        this.prev = null;
-        this.explored = 0;
+        this.prev = -1;
         this.weight = weight;
-    }
-}
-
-
-class QNode {
-    constructor(cargo) {
-        this.cargo = cargo;
-        this.next = null;
-    }
-}
-
-
-class Queue {
-    constructor() {
-        this.top = null;
-        this.numEl = 0;
     }
 }
 
@@ -64,7 +47,7 @@ function removeHeap(heap) {
     heap[0] = heap[n - 1];
     heap.pop();     // remove the last element
     swapDown(heap, 0);
-    console.log(node.weight);
+    // console.log(node.weight);
     return node;
 }
 
@@ -249,8 +232,13 @@ function removeNode(graph, node) {
 
 // call by button
 function inputGraphNode(nameId, weightId) {
-    gNode = new GraphNode(document.getElementById(nameId).value,
-        document.getElementById(weightId).value);
+    let name = document.getElementById(nameId).value;
+    let weight = document.getElementById(weightId).value;
+    if (weight == "") {
+        gNode = new GraphNode(name);
+    } else {
+        gNode = new GraphNode(name, weight);
+    }
     addNode(myGraph, gNode);
 }
 
@@ -279,39 +267,159 @@ function extend(a1, a2) {
 }
 
 
-function addEdge(id1, id2) {
+function addEdge(idx1, idx2, edgeWeight) {
+    // modify adjMtx
+    myGraph.adjMtx[idx1][idx2] = edgeWeight;
+    myGraph.adjMtx[idx2][idx1] = edgeWeight;
+}
+
+
+function userAddEdge(id1, id2, idW) {
     // get names of nodes
     let nodeName1 = document.getElementById(id1).value;
     let nodeName2 = document.getElementById(id2).value;
+    // get edge weight
+    let edgeWeight = Number(document.getElementById(idW).value);
     // get number of nodes
     let n = myGraph.nodes.length;
-    // declare nodes so accessible throughout the function
-    let node1 = null;
-    let node2 = null;
+    // declare idices so accessible throughout the function
+    let idx1 = -1;
+    let idx2 = -1;
 
     // go through and find nodes in myGraph
     for (let i=0; i<n; i++) {
         // check if node1
         if (myGraph.nodes[i].name == nodeName1) {
-            node1 = myGraph.nodes[i];
+            idx1 = myGraph.nodes[i].idx;
         }
         // check if node2
         if (myGraph.nodes[i].name == nodeName2) {
-            node2 = myGraph.nodes[i];
+            idx2 = myGraph.nodes[i].idx;
         }
         // break out if nodes have been found
-        if (node1 && node2) break;
+        if (idx1 != -1 && idx2 != -1) break;
     }
 
-    // modify adjMtx
-    myGraph.adjMtx[node1.idx][node2.idx] = 1;
-    myGraph.adjMtx[node2.idx][node1.idx] = 1;
+    addEdge(idx1, idx2, edgeWeight);
 }
 
 
 function adjMtxTest() {
     printArray(myGraph.adjMtx);
 }
+
+
+function resetGraph(graph) {
+    let n = graph.nodes.length
+    for (let i=0; i<n; i++) {
+        graph.nodes[i].prev = -1;
+        graph.nodes[i].weight = -1;
+    }
+}
+
+
+function dijkstrasAlgo(graph, startIdx, endIdx) {
+    // current index
+    let curIdx = startIdx;
+    // initialize heap
+    let heap = [];
+    // better to use idx here instead of node :(
+    insertHeap(heap, graph.nodes[startIdx]);
+    // give start node a weight of 0
+    graph.nodes[startIdx].weight = 0;
+
+    // while queue not empty and endIdx not found
+    while (heap.length!=0 && curIdx!=endIdx) {
+        // take from the queue
+        curIdx = removeHeap(heap).idx;          // should change to indices :(
+
+        let n = graph.nodes.length;
+        // add edges to queue
+        for (let i=0; i<n; i++) {
+            // add to queue if unvisited (0) or edge is lower than node weight
+            if (graph.adjMtx[curIdx][i] != 0) {
+                // weight of new node from previous edge
+                let newWeight = graph.adjMtx[curIdx][i] + graph.nodes[curIdx].weight;
+                if (graph.nodes[i].weight == -1 || newWeight < graph.nodes[i].weight) {
+                    // if unexplored (weight = -1) or new path is quicker, add edge 
+                    // weight to previous weight
+                    graph.nodes[i].weight = newWeight;
+                    // set previous node to back track later
+                    graph.nodes[i].prev = curIdx;
+                    // add to priorith queue
+                    insertHeap(heap, graph.nodes[i])  // should change to indices :(
+                }
+            }
+
+        }
+    }
+    // empty the queue if anything is left
+    while (heap.length != 0) {
+        removeHeap(heap);
+    }
+    // if path found
+    if (curIdx == endIdx) {
+        console.log("Path found between " + graph.nodes[startIdx].name + " and " +
+            graph.nodes[endIdx].name + " found!");
+        // print path backwards
+        while (curIdx != startIdx) {
+            console.log(graph.nodes[curIdx].name);
+            curIdx = graph.nodes[curIdx].prev;
+        }
+        console.log(graph.nodes[curIdx].name);
+    } 
+    // else path not found
+    else {
+        console.log("Path found between " + graph.nodes[startIdx].name + " and " +
+            graph.nodes[endIdx].name + " not found!");
+    }
+    // reset graph by updating previous nodes and weights to -1
+    resetGraph(graph);
+}
+
+
+function userDijkstrasAlgo(graph, id1, id2) {
+    let startName = document.getElementById(id1).value;
+    let endName = document.getElementById(id2).value;
+    let n = graph.nodes.length;
+    let startIdx = -1;
+    let endIdx = -1;
+    // match names to indices
+    for (let i=0; i<n; i++) {
+        if (graph.nodes[i].name == startName) {
+            startIdx = graph.nodes[i].idx;
+        } else if (graph.nodes[i].name == endName) {
+            endIdx = graph.nodes[i].idx;
+        }
+        if (startIdx != -1 && endIdx != -1) break;
+    }
+    // check if found nodes
+    if (startIdx == -1 || endIdx == -1) {
+        console.log("One or both nodes not found");
+        return;
+    }
+    dijkstrasAlgo(graph, startIdx, endIdx);
+}
+
+
+function dijstrasTestGraph1(graph) {
+    let n = 6;
+    for (let i=0; i<n; i++) {
+        let node = new GraphNode("n".concat(String(i)));
+        addNode(graph, node);
+    }
+    // outside edges
+    addEdge(0, 1, 2);
+    addEdge(1, 2, 5);
+    addEdge(2, 3, 6);
+    addEdge(3, 4, 4);
+    addEdge(4, 5, 2);
+    // inside edges
+    addEdge(0, 4, 2);
+    addEdge(1, 4, 6);
+    addEdge(2, 4, 1);
+}
+
 
 
 ////////////////////////////////////////////////////

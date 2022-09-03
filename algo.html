@@ -49,12 +49,16 @@
         </div>
 
         <div class="content2">
-            <button type="button" onclick="addEdge('node1', 'node2')">Add Edge</button>
+            <button type="button" onclick="userAddEdge('node1', 'node2', 'edge-weight')">Add Edge</button>
             <form>
                 <span>Node 1:</span>
                 <input type="text" id="node1">
                 <span>Node 2:</span>
                 <input type="text" id="node2">
+            </form>
+            <form>
+                <span>Edge Weight</span>
+                <input type="text" id="edge-weight">
             </form>
             <button type="button" onclick="printArray(myGraph.adjMtx)">Print Matrix</button>
         </div>
@@ -73,6 +77,20 @@
                 <button type="button" onclick="removeHeap(myHeap)">
                     Remove from Heap</button>
             </div>
+        </div>
+
+        <div class="content4">
+            <button type="button" onclick="dijstrasTestGraph1(myGraph)">Graph 1</button>
+            <form>
+                <span>Start Node:</span>
+                <input type="text" id="start-node">
+            </form>
+            <form>
+                <span>End Node:</span>
+                <input type="text" id="end-node">
+            </form>
+            <button type="button" onclick="userDijkstrasAlgo(myGraph, 'start-node', 'end-node')">
+                Run Dijkstra's Algorithm</button>
         </div>
 
     </div>
